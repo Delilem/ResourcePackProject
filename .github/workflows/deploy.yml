@@ -1,0 +1,31 @@
+name: Build and Deploy Resource Pack
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create resource pack ZIP
+        run: |
+          zip -r resourcepack.zip assets pack.mcmeta pack.png
+
+      - name: Generate SHA-1
+        run: |
+          sha1sum resourcepack.zip | awk '{print $1}' > sha1.txt
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
